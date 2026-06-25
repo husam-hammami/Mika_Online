@@ -18,3 +18,9 @@ id = "UELlG_SAwb1SL-ySXelnP"
 uri = "file://artifacts/mika-promo/public/audio/bg_music.mp3"
 type = "audio"
 title = "background music"
+
+[[outputs]]
+id = "YSwq1eLF5liuBTDGolBCl"
+uri = "file://exports/MIKA_Promo.mp4"
+type = "video"
+title = "MIKA Promo Video (1080p, with music)"
