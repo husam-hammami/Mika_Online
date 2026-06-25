@@ -1,0 +1,1 @@
+- [video-js external assets](video-js-external-assets.md) — DESIGN subagent video builds may reference external URLs (e.g. grainy-gradients noise.svg) that 404 and break export; replace with inline data-URI/self-contained assets.

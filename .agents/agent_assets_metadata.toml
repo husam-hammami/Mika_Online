@@ -1,0 +1,20 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "RlLHmxCP9A6wqcRMDAdF-"
+uri = "file://artifacts/mika-promo/public/assets/waiting.jpg"
+type = "image"
+title = "Moody cinematic shot of an anxious patient in a dark hospital waiting room, looking stressed"
+
+[[outputs]]
+id = "9ibzpiSKHNWCD2d7QBkk8"
+uri = "file://artifacts/mika-promo/public/assets/mri_scan.jpg"
+type = "image"
+title = "High tech MRI brain scan medical imaging blue glow"
+
+[[outputs]]
+id = "UELlG_SAwb1SL-ySXelnP"
+uri = "file://artifacts/mika-promo/public/audio/bg_music.mp3"
+type = "audio"
+title = "background music"
