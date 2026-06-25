@@ -1,13 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --color-primary: #10b981; /* Medical teal/green */
-  --color-secondary: #0ea5e9; /* Medical blue */
-  --color-accent: #06b6d4; /* Cyan */
+  --color-primary: #1e6bff; /* MIKA electric blue */
+  --color-secondary: #4d8bff; /* Lighter electric blue */
+  --color-accent: #93b4ff; /* Pale blue glow */
+  --color-silver: #cdd8ea; /* Metallic silver accent */
 
-  --color-bg-light: #020617; /* Very dark blue for cinematic feel */
-  --color-bg-dark: #000000;
-  --color-bg-muted: #0f172a;
+  --color-bg-light: #f6f8fc; /* Clean clinical white */
+  --color-bg-dark: #05070d; /* Near-black brand world */
+  --color-bg-muted: #0b1020;
+  --color-ink: #0b1220; /* Dark text on light */
 
   --color-text-primary: #f8fafc;
   --color-text-secondary: #cbd5e1;

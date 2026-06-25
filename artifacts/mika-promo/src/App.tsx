@@ -1,5 +1,11 @@
 import VideoWithControls from "@/components/video/VideoWithControls";
+import { FormatContext, resolveFormatFromUrl } from "@/components/video/FormatContext";
 
 export default function App() {
-  return <VideoWithControls />;
+  const format = resolveFormatFromUrl();
+  return (
+    <FormatContext.Provider value={format}>
+      <VideoWithControls />
+    </FormatContext.Provider>
+  );
 }
