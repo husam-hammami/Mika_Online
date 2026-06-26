@@ -105,7 +105,7 @@ export default function Home() {
               <div className="mt-8 flex items-center gap-4">
                 <div className="w-12 h-px bg-[#1e6bff]" />
                 <span className="text-sm font-medium tracking-widest uppercase text-white/70">
-                  Husam Hammami, Founder
+                  Husam Hammami, Creator
                 </span>
               </div>
             </FadeIn>
