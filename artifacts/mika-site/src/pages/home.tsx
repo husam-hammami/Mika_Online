@@ -1,49 +1,71 @@
-import React from "react";
+import React, { useState } from "react";
 import { FadeIn } from "@/components/FadeIn";
 import { EmailGate } from "@/components/EmailGate";
 import { Play } from "lucide-react";
 
 export default function Home() {
   const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, "");
+  const [playing, setPlaying] = useState(false);
 
   return (
     <div className="min-h-[100dvh] w-full flex flex-col font-sans selection:bg-[#1e6bff] selection:text-white">
       {/* 1) DARK / CINEMATIC OPENING */}
-      <section className="mika-dark-bg min-h-screen relative overflow-hidden flex flex-col items-center justify-center pt-24 pb-32 px-6">
+      <section className="mika-dark-bg min-h-screen relative overflow-hidden flex flex-col items-center justify-center pt-20 pb-24 px-6">
         <div className="absolute inset-0 w-full h-full opacity-30 pointer-events-none">
           <div className="absolute top-1/4 left-1/4 w-[50vw] h-[50vw] bg-[#1e6bff] rounded-full blur-[150px] opacity-20 animate-pulse mix-blend-screen" />
           <div className="absolute bottom-1/4 right-1/4 w-[40vw] h-[40vw] bg-[#1e6bff] rounded-full blur-[120px] opacity-10 mix-blend-screen" />
         </div>
 
-        <div className="z-10 w-full max-w-5xl mx-auto flex flex-col items-center text-center">
+        <div className="z-10 w-full max-w-6xl mx-auto flex flex-col items-center text-center">
           <FadeIn>
             <img 
               src={`${baseUrl}/brand/mika_logo_glow.png`} 
               alt="MIKA Logo" 
-              className="h-28 md:h-40 mb-10 opacity-95 drop-shadow-[0_0_25px_rgba(30,107,255,0.55)]" 
+              className="h-32 sm:h-40 md:h-52 lg:h-60 mb-6 opacity-95 drop-shadow-[0_0_35px_rgba(30,107,255,0.6)]" 
             />
           </FadeIn>
 
           <FadeIn delay={0.2}>
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-white mb-6 leading-[1.05]">
-              Understand your body. <br/>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6 leading-[1.05]">
+              Understand your body.<br/>
               <span className="mika-accent-text text-shadow-glow">In plain language.</span>
             </h1>
           </FadeIn>
 
           <FadeIn delay={0.4}>
-            <p className="text-lg md:text-xl text-gray-400 max-w-xl mx-auto mb-14 leading-relaxed">
+            <p className="text-lg md:text-xl text-gray-400 max-w-xl mx-auto mb-10 leading-relaxed">
               A free app that reads your medical scans and tells you what they mean.
             </p>
           </FadeIn>
 
           <FadeIn delay={0.6} className="w-full">
             <div className="relative w-full max-w-4xl mx-auto aspect-video rounded-2xl overflow-hidden box-shadow-glow border border-white/10 bg-black">
-              <video 
-                src={`${baseUrl}/MIKA_Promo.mp4`} 
-                controls 
-                className="w-full h-full object-contain"
-              />
+              {playing ? (
+                <video 
+                  src={`${baseUrl}/MIKA_Promo.mp4`} 
+                  controls 
+                  autoPlay
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setPlaying(true)}
+                  aria-label="Play MIKA promo video"
+                  className="group absolute inset-0 w-full h-full"
+                >
+                  <img 
+                    src={`${baseUrl}/footage/promo_poster.jpg`} 
+                    alt="MIKA product preview" 
+                    className="w-full h-full object-contain"
+                  />
+                  <span className="absolute inset-0 flex items-center justify-center bg-black/10 transition-colors group-hover:bg-black/20">
+                    <span className="flex items-center justify-center w-20 h-20 rounded-full bg-[#1e6bff] shadow-[0_0_40px_rgba(30,107,255,0.6)] transition-transform group-hover:scale-110">
+                      <Play className="w-8 h-8 text-white translate-x-0.5" fill="currentColor" />
+                    </span>
+                  </span>
+                </button>
+              )}
             </div>
           </FadeIn>
         </div>
