@@ -96,10 +96,10 @@ export default function Home() {
             <FadeIn delay={0.2}>
               <div className="space-y-6 text-gray-400 text-lg leading-relaxed">
                 <p>
-                  After my own spinal injury, I sat alone staring at scans I couldn't understand — terrified.
+                  I know how it feels to be alone and afraid, holding answers about your own body that you can't understand.
                 </p>
                 <p className="text-white font-medium text-xl border-l-2 border-[#1e6bff] pl-4">
-                  "I built MIKA so you never feel as lost as I did. It's free, for anyone who needs it."
+                  "I built MIKA so you never have to feel as lost as I did — and made it free, for anyone who needs it."
                 </p>
               </div>
               <div className="mt-8 flex items-center gap-4">
