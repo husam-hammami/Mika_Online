@@ -27,7 +27,7 @@ Email-gated download landing page for MIKA (free clinical-imaging desktop app). 
 - Static assets live in `artifacts/mika-site/public/{brand,footage,product}` + `MIKA_Promo.mp4`; referenced via `import.meta.env.BASE_URL` (stripped trailing slash) so they resolve under any base path.
 
 ## GitHub push setup
-- Code is pushed to GitHub repo **husam-hammami/Mika** (private) via the Replit GitHub **connector** (OAuth, account husam-hammami), NOT a PAT.
+- Code is pushed to GitHub repo **husam-hammami/Mika_Online** (public) via the Replit GitHub **connector** (OAuth, account husam-hammami), NOT a PAT.
 - PATs the user pasted failed with "Bad credentials"; the built-in GitHub connection worked first try. Prefer the connector over asking for a PAT.
 - To push: get token via `listConnections("github")[0].settings.access_token` in code_execution, write it to a /tmp askpass helper, push with `GIT_ASKPASS` + inline `https://x-access-token@github.com/...` URL, then shred the temp files. Never print the token.
 - **Gotcha:** `git remote add`/config writes are blocked in main agent ("Destructive git operations not allowed"), so a persistent `origin` cannot be saved — push with an inline URL each time. Plain `git push` (non-force) to an inline URL is allowed.
