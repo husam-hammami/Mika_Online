@@ -20,20 +20,20 @@ export default function Home() {
             <img 
               src={`${baseUrl}/brand/mika_logo_glow.png`} 
               alt="MIKA Logo" 
-              className="h-16 md:h-20 mb-12 opacity-90 drop-shadow-[0_0_15px_rgba(30,107,255,0.5)]" 
+              className="h-28 md:h-40 mb-10 opacity-95 drop-shadow-[0_0_25px_rgba(30,107,255,0.55)]" 
             />
           </FadeIn>
 
           <FadeIn delay={0.2}>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6 leading-[1.1]">
-              Clinical Imaging Intelligence. <br/>
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-white mb-6 leading-[1.05]">
+              Understand your body. <br/>
               <span className="mika-accent-text text-shadow-glow">In plain language.</span>
             </h1>
           </FadeIn>
 
           <FadeIn delay={0.4}>
-            <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-16 leading-relaxed">
-              A free desktop app that reads your medical scans and explains what they show — turning frightening radiology reports into something you can actually understand.
+            <p className="text-lg md:text-xl text-gray-400 max-w-xl mx-auto mb-14 leading-relaxed">
+              A free app that reads your medical scans and tells you what they mean.
             </p>
           </FadeIn>
 
@@ -41,9 +41,8 @@ export default function Home() {
             <div className="relative w-full max-w-4xl mx-auto aspect-video rounded-2xl overflow-hidden box-shadow-glow border border-white/10 bg-black">
               <video 
                 src={`${baseUrl}/MIKA_Promo.mp4`} 
-                poster={`${baseUrl}/footage/clip_reading.jpg`}
                 controls 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
             </div>
           </FadeIn>
@@ -75,16 +74,10 @@ export default function Home() {
             <FadeIn delay={0.2}>
               <div className="space-y-6 text-gray-400 text-lg leading-relaxed">
                 <p>
-                  A cauda equina emergency. Two spine surgeries. Failed back surgery syndrome. A permanent S1 nerve injury.
-                </p>
-                <p>
-                  I remember sitting alone, staring at scans and reports I couldn't understand, utterly terrified. The path was described to me as "high risk, low reward."
+                  After my own spinal injury, I sat alone staring at scans I couldn't understand — terrified.
                 </p>
                 <p className="text-white font-medium text-xl border-l-2 border-[#1e6bff] pl-4">
-                  "I built MIKA so you never feel as lost as I did. It's free. For anyone who needs it."
-                </p>
-                <p>
-                  You don't have to face it alone.
+                  "I built MIKA so you never feel as lost as I did. It's free, for anyone who needs it."
                 </p>
               </div>
               <div className="mt-8 flex items-center gap-4">
@@ -108,8 +101,8 @@ export default function Home() {
             <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-[#05070d] mb-6">
               How it works
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Four simple steps to clarity. Designed to feel like a trustworthy expert sitting beside you.
+            <p className="text-lg text-gray-600 max-w-xl mx-auto">
+              Four simple steps to clarity.
             </p>
           </FadeIn>
         </div>
@@ -123,27 +116,27 @@ export default function Home() {
               </div>
               <h3 className="text-3xl font-bold text-[#05070d]">Upload</h3>
               <p className="text-lg text-gray-600">
-                Securely drop your medical scan files directly into MIKA. It stays entirely on your computer — private, secure, and offline.
+                Drop in your scan. It stays private on your own computer.
               </p>
             </FadeIn>
-            <FadeIn delay={0.2} className="relative rounded-2xl overflow-hidden border border-gray-200 shadow-xl bg-gray-50 aspect-video">
+            <FadeIn delay={0.2} className="relative rounded-2xl overflow-hidden border border-gray-200 shadow-xl bg-gray-100 aspect-video">
               <video 
                 src={`${baseUrl}/footage/clip_upload.mp4`} 
                 poster={`${baseUrl}/footage/clip_upload.jpg`}
                 autoPlay muted loop playsInline 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
             </FadeIn>
           </div>
 
           {/* STEP 2 */}
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <FadeIn className="order-2 md:order-1 relative rounded-2xl overflow-hidden border border-gray-200 shadow-xl bg-gray-50 aspect-video">
+            <FadeIn className="order-2 md:order-1 relative rounded-2xl overflow-hidden border border-gray-200 shadow-xl bg-gray-100 aspect-video">
               <video 
                 src={`${baseUrl}/footage/clip_reading.mp4`} 
                 poster={`${baseUrl}/footage/clip_reading.jpg`}
                 autoPlay muted loop playsInline 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
             </FadeIn>
             <FadeIn delay={0.2} className="order-1 md:order-2 space-y-6 md:pl-12">
@@ -152,7 +145,7 @@ export default function Home() {
               </div>
               <h3 className="text-3xl font-bold text-[#05070d]">Read</h3>
               <p className="text-lg text-gray-600">
-                MIKA reads the raw imaging data. It analyzes MRI, CT, and X-ray formats to understand exactly what the radiologist sees.
+                MIKA reads your MRI, CT, or X-ray — just like a radiologist would.
               </p>
             </FadeIn>
           </div>
@@ -165,27 +158,27 @@ export default function Home() {
               </div>
               <h3 className="text-3xl font-bold text-[#05070d]">Answer</h3>
               <p className="text-lg text-gray-600">
-                Get a clear, plain-language explanation of the findings. We strip away the intimidating medical jargon so you know what's happening.
+                You get a clear answer — no medical jargon.
               </p>
             </FadeIn>
-            <FadeIn delay={0.2} className="relative rounded-2xl overflow-hidden border border-gray-200 shadow-xl bg-gray-50 aspect-video">
+            <FadeIn delay={0.2} className="relative rounded-2xl overflow-hidden border border-gray-200 shadow-xl bg-gray-100 aspect-video">
               <video 
                 src={`${baseUrl}/footage/clip_answer.mp4`} 
                 poster={`${baseUrl}/footage/clip_answer.jpg`}
                 autoPlay muted loop playsInline 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
             </FadeIn>
           </div>
 
           {/* STEP 4 */}
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <FadeIn className="order-2 md:order-1 relative rounded-2xl overflow-hidden border border-gray-200 shadow-xl bg-gray-50 aspect-video">
+            <FadeIn className="order-2 md:order-1 relative rounded-2xl overflow-hidden border border-gray-200 shadow-xl bg-gray-100 aspect-video">
               <video 
                 src={`${baseUrl}/footage/clip_chat.mp4`} 
                 poster={`${baseUrl}/footage/clip_chat.jpg`}
                 autoPlay muted loop playsInline 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
             </FadeIn>
             <FadeIn delay={0.2} className="order-1 md:order-2 space-y-6 md:pl-12">
@@ -194,7 +187,7 @@ export default function Home() {
               </div>
               <h3 className="text-3xl font-bold text-[#05070d]">Ask</h3>
               <p className="text-lg text-gray-600">
-                Still have questions? Chat directly with MIKA about your specific scan. Ask anything, no matter how small, until you feel confident.
+                Ask MIKA anything about your scan, until you feel sure.
               </p>
             </FadeIn>
           </div>
@@ -234,10 +227,8 @@ export default function Home() {
             alt="MIKA" 
             className="h-5 mx-auto opacity-50"
           />
-          <p className="text-xs text-gray-500 max-w-2xl mx-auto leading-relaxed">
-            MIKA is designed to explain medical scans in plain language for educational purposes. 
-            It is not a doctor, does not provide medical diagnoses, and does not replace professional medical advice. 
-            Always consult a qualified healthcare provider regarding any medical condition.
+          <p className="text-xs text-gray-500 max-w-xl mx-auto leading-relaxed">
+            MIKA explains scans in plain language — it is not a doctor and does not replace professional medical advice.
           </p>
           <p className="text-xs text-gray-600">
             &copy; {new Date().getFullYear()} MIKA. All rights reserved.
