@@ -4,7 +4,7 @@ import { ClipFrame } from './ClipFrame';
 import { MikaLogo } from './MikaLogo';
 import { useFormat } from '../FormatContext';
 
-const STEPS = ['Upload', 'Read', 'Answer'];
+const STEPS = ['Upload', 'Read', 'Answer', 'Ask'];
 
 function StepTracker({ active }: { active: number }) {
   return (
