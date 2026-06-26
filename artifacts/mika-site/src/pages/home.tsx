@@ -229,7 +229,7 @@ export default function Home() {
               Get MIKA for free.
             </h2>
             <p className="text-lg text-gray-600 max-w-xl mx-auto">
-              It's free. For anyone who needs it. Download the app for Mac or Windows to start understanding your health today.
+              It's free. For anyone who needs it, download the app for Mac or Windows to start understanding your health today.
             </p>
           </FadeIn>
 
