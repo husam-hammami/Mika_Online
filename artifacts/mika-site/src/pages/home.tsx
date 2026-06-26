@@ -34,7 +34,7 @@ export default function Home() {
 
           <FadeIn delay={0.4}>
             <p className="text-base md:text-lg text-gray-400 max-w-xl mx-auto mb-6 leading-relaxed">
-              A free app that reads your medical scans and tells you what they mean.
+              A free app that reads and explains your medical scans and lab reports.
             </p>
           </FadeIn>
 
