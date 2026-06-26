@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: access
+    description: Access request (email capture) operations
 paths:
   /healthz:
     get:
@@ -24,6 +26,64 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /access-requests:
+    get:
+      operationId: listAccessRequests
+      tags: [access]
+      summary: List access requests
+      description: Returns all captured access-request emails, newest first (owner view).
+      responses:
+        "200":
+          description: A list of access requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AccessRequest"
+    post:
+      operationId: createAccessRequest
+      tags: [access]
+      summary: Submit an access request
+      description: Stores a visitor's email so they can be sent the download. Idempotent on email.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccessRequestInput"
+      responses:
+        "201":
+          description: Access request stored
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccessRequest"
+        "200":
+          description: Email already registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccessRequest"
+        "400":
+          description: Invalid email
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /access-requests/summary:
+    get:
+      operationId: getAccessRequestSummary
+      tags: [access]
+      summary: Access request summary
+      description: Aggregate stats about captured emails for the owner dashboard.
+      responses:
+        "200":
+          description: Summary stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccessRequestSummary"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +93,42 @@ components:
           type: string
       required:
         - status
-
+    AccessRequest:
+      type: object
+      required: [id, email, createdAt]
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    AccessRequestInput:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 3
+          maxLength: 320
+    AccessRequestSummary:
+      type: object
+      required: [total, today, latestEmail, latestAt]
+      properties:
+        total:
+          type: integer
+        today:
+          type: integer
+        latestEmail:
+          type: ["string", "null"]
+        latestAt:
+          type: ["string", "null"]
+          format: date-time
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string

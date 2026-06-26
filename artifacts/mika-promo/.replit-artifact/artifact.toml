@@ -1,5 +1,5 @@
 kind = "video"
-previewPath = "/"
+previewPath = "/promo/"
 title = "MIKA Promo Video"
 version = "1.0.0"
 id = "artifacts/mika-promo"
@@ -11,7 +11,7 @@ version = "1.0.0"
 
 [[services]]
 name = "web"
-paths = [ "/" ]
+paths = [ "/promo/" ]
 localPort = 23724
 
 [services.development]
@@ -28,4 +28,4 @@ to = "/index.html"
 
 [services.env]
 PORT = "23724"
-BASE_PATH = "/"
+BASE_PATH = "/promo/"
