@@ -99,7 +99,7 @@ export default function Home() {
                   I know how it feels to be alone and afraid, holding answers about your own body that you can't understand.
                 </p>
                 <p className="text-white font-medium text-xl border-l-2 border-[#1e6bff] pl-4">
-                  "I built MIKA so you never have to feel as lost as I did — and made it free, for anyone who needs it."
+                  "I built MIKA so you never have to feel as lost as I did, and made it free, for anyone who needs it."
                 </p>
               </div>
               <div className="mt-8 flex items-center gap-4">
@@ -167,7 +167,7 @@ export default function Home() {
               </div>
               <h3 className="text-3xl font-bold text-[#05070d]">Read</h3>
               <p className="text-lg text-gray-600">
-                MIKA reads your MRI, CT, or X-ray — just like a radiologist would.
+                MIKA reads your MRI, CT, or X-ray, just like a radiologist would.
               </p>
             </FadeIn>
           </div>
@@ -180,7 +180,7 @@ export default function Home() {
               </div>
               <h3 className="text-3xl font-bold text-[#05070d]">Answer</h3>
               <p className="text-lg text-gray-600">
-                You get a clear answer — no medical jargon.
+                You get a clear answer, with no medical jargon.
               </p>
             </FadeIn>
             <FadeIn delay={0.2} className="relative rounded-2xl overflow-hidden border border-gray-200 shadow-xl bg-gray-100 aspect-video">
@@ -250,7 +250,7 @@ export default function Home() {
             className="h-5 mx-auto opacity-50"
           />
           <p className="text-xs text-gray-500 max-w-xl mx-auto leading-relaxed">
-            MIKA explains scans in plain language — it is not a doctor and does not replace professional medical advice.
+            MIKA explains scans in plain language. It is not a doctor and does not replace professional medical advice.
           </p>
           <p className="text-xs text-gray-600">
             &copy; {new Date().getFullYear()} MIKA. All rights reserved.
