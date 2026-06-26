@@ -10,35 +10,35 @@ export default function Home() {
   return (
     <div className="min-h-[100dvh] w-full flex flex-col font-sans selection:bg-[#1e6bff] selection:text-white">
       {/* 1) DARK / CINEMATIC OPENING */}
-      <section className="mika-dark-bg min-h-screen relative overflow-hidden flex flex-col items-center justify-center pt-20 pb-24 px-6">
+      <section className="mika-dark-bg min-h-screen relative overflow-hidden flex flex-col items-center justify-center pt-12 pb-12 px-6">
         <div className="absolute inset-0 w-full h-full opacity-30 pointer-events-none">
           <div className="absolute top-1/4 left-1/4 w-[50vw] h-[50vw] bg-[#1e6bff] rounded-full blur-[150px] opacity-20 animate-pulse mix-blend-screen" />
           <div className="absolute bottom-1/4 right-1/4 w-[40vw] h-[40vw] bg-[#1e6bff] rounded-full blur-[120px] opacity-10 mix-blend-screen" />
         </div>
 
-        <div className="z-10 w-full max-w-6xl mx-auto flex flex-col items-center text-center">
+        <div className="z-10 w-full max-w-7xl mx-auto flex flex-col items-center text-center">
           <FadeIn>
             <img 
               src={`${baseUrl}/brand/mika_logo_glow.png`} 
               alt="MIKA Logo" 
-              className="h-32 sm:h-40 md:h-52 lg:h-60 mb-6 opacity-95 drop-shadow-[0_0_35px_rgba(30,107,255,0.6)]" 
+              className="h-28 sm:h-36 md:h-44 lg:h-52 mb-4 opacity-95 drop-shadow-[0_0_35px_rgba(30,107,255,0.6)]" 
             />
           </FadeIn>
 
           <FadeIn delay={0.2}>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6 leading-[1.05]">
-              Understand your body.<br/>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-4 leading-[1.05]">
+              Understand your body.{" "}
               <span className="mika-accent-text text-shadow-glow">In plain language.</span>
             </h1>
           </FadeIn>
 
           <FadeIn delay={0.4}>
-            <p className="text-lg md:text-xl text-gray-400 max-w-xl mx-auto mb-10 leading-relaxed">
+            <p className="text-base md:text-lg text-gray-400 max-w-xl mx-auto mb-8 leading-relaxed">
               A free app that reads your medical scans and tells you what they mean.
             </p>
           </FadeIn>
 
-          <FadeIn delay={0.6} className="w-full">
+          <div className="w-full">
             <div className="relative w-full max-w-4xl mx-auto aspect-video rounded-2xl overflow-hidden box-shadow-glow border border-white/10 bg-black">
               {playing ? (
                 <video 
@@ -67,7 +67,7 @@ export default function Home() {
                 </button>
               )}
             </div>
-          </FadeIn>
+          </div>
         </div>
       </section>
 
