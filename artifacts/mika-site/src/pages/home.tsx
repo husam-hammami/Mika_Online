@@ -225,12 +225,9 @@ export default function Home() {
               alt="MIKA" 
               className="h-16 mx-auto mb-8 opacity-80"
             />
-            <h2 className="text-4xl font-bold text-[#05070d] mb-4">
+            <h2 className="text-4xl font-bold text-[#05070d]">
               Get MIKA for free.
             </h2>
-            <p className="text-lg text-gray-600 max-w-xl mx-auto">
-              It's free. For anyone who needs it, download the app for Mac or Windows to start understanding your health today.
-            </p>
           </FadeIn>
 
           <FadeIn delay={0.2}>
