@@ -1,0 +1,7 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "BASE_PATH=/ PORT=3000 pnpm --filter @workspace/mika-site run build",
+  "outputDirectory": "artifacts/mika-site/dist/public",
+  "rewrites": [{ "source": "/((?!api/).*)", "destination": "/index.html" }]
+}

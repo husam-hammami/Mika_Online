@@ -1,0 +1,6 @@
+# Trim heavy, non-package files from the Vercel build context.
+# Anchored with leading slash so nested mp4s the site actually serves
+# (artifacts/mika-site/public/footage/*.mp4) are NOT excluded.
+/Mika-Video-Promotion-Jun-26-01-43-15.mp4
+/exports/
+/attached_assets/
