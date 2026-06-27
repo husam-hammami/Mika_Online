@@ -138,7 +138,7 @@ export default function Home() {
               </div>
               <h3 className="text-3xl font-bold text-[#05070d]">Upload</h3>
               <p className="text-lg text-gray-600">
-                Drop in your scan. It stays private on your own computer.
+                Drop in your scan or lab report. It stays private on your own computer.
               </p>
             </FadeIn>
             <FadeIn delay={0.2} className="relative rounded-2xl overflow-hidden border border-gray-200 shadow-xl bg-gray-100 aspect-video">
@@ -167,7 +167,7 @@ export default function Home() {
               </div>
               <h3 className="text-3xl font-bold text-[#05070d]">Read</h3>
               <p className="text-lg text-gray-600">
-                MIKA reads your MRI, CT, or X-ray, just like a radiologist would.
+                MIKA reads your MRI, CT, or X-ray, and your blood work, just like a specialist would.
               </p>
             </FadeIn>
           </div>
@@ -209,7 +209,63 @@ export default function Home() {
               </div>
               <h3 className="text-3xl font-bold text-[#05070d]">Ask</h3>
               <p className="text-lg text-gray-600">
-                Ask MIKA anything about your scan, until you feel sure.
+                Ask MIKA anything about your scan or report, until you feel sure.
+              </p>
+            </FadeIn>
+          </div>
+        </div>
+      </section>
+
+      {/* LAB REPORTS */}
+      <section className="mika-light-bg pb-24 px-6">
+        <div className="max-w-5xl mx-auto text-center mb-16">
+          <FadeIn>
+            <span className="inline-block text-sm font-semibold tracking-widest uppercase mika-accent-text mb-4">
+              Not just imaging
+            </span>
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-[#05070d] mb-6">
+              Lab reports too.
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              MIKA reads your blood work and lab panels the same way. It explains every value and tells you what actually matters.
+            </p>
+          </FadeIn>
+        </div>
+
+        <div className="max-w-5xl mx-auto">
+          <FadeIn>
+            <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-xl bg-white">
+              <img
+                src={`${baseUrl}/product/lab_result.png`}
+                alt="MIKA explaining a lab report in plain language"
+                className="w-full h-auto"
+              />
+            </div>
+          </FadeIn>
+
+          <div className="grid md:grid-cols-2 gap-8 mt-8">
+            <FadeIn delay={0.15} className="space-y-4">
+              <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-xl bg-white">
+                <img
+                  src={`${baseUrl}/product/lab_values.png`}
+                  alt="Every lab value read against your printed range"
+                  className="w-full h-auto"
+                />
+              </div>
+              <p className="text-base text-gray-600 text-center">
+                Every value, read against your printed range and put in plain words.
+              </p>
+            </FadeIn>
+            <FadeIn delay={0.3} className="space-y-4">
+              <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-xl bg-white">
+                <img
+                  src={`${baseUrl}/product/lab_chat.png`}
+                  alt="Ask MIKA about your lab report"
+                  className="w-full h-auto"
+                />
+              </div>
+              <p className="text-base text-gray-600 text-center">
+                Ask anything about your results and get a clear answer back.
               </p>
             </FadeIn>
           </div>
@@ -247,7 +303,7 @@ export default function Home() {
             className="h-5 mx-auto opacity-50"
           />
           <p className="text-xs text-gray-500 max-w-xl mx-auto leading-relaxed">
-            MIKA explains scans in plain language. It is not a doctor and does not replace professional medical advice.
+            MIKA explains scans and lab reports in plain language. It is not a doctor and does not replace professional medical advice.
           </p>
           <p className="text-xs text-gray-600">
             &copy; {new Date().getFullYear()} MIKA. All rights reserved.
