@@ -41,11 +41,11 @@ export default function Home() {
           <div className="w-full">
             <div className="relative w-full max-w-5xl mx-auto aspect-video rounded-2xl overflow-hidden box-shadow-glow border border-white/10 bg-black">
               {playing ? (
-                <video 
-                  src={`${baseUrl}/MIKA_Promo.mp4`} 
-                  controls 
-                  autoPlay
-                  className="w-full h-full object-contain"
+                <iframe
+                  src={`${baseUrl}/promo-embed/index.html`}
+                  title="MIKA promo video"
+                  className="w-full h-full border-0"
+                  allow="autoplay; fullscreen"
                 />
               ) : (
                 <button

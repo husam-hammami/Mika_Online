@@ -24,7 +24,12 @@ Email-gated download landing page for MIKA (free clinical-imaging desktop app). 
 
 ## Routing / assets
 - mika-site is at previewPath "/"; the promo video artifact (mika-promo) was moved to "/promo/".
-- Static assets live in `artifacts/mika-site/public/{brand,footage,product}` + `MIKA_Promo.mp4`; referenced via `import.meta.env.BASE_URL` (stripped trailing slash) so they resolve under any base path.
+- Static assets live in `artifacts/mika-site/public/{brand,footage,product}`; referenced via `import.meta.env.BASE_URL` (stripped trailing slash) so they resolve under any base path.
+
+## Promo video on the site = embedded live deck, NOT a baked mp4
+- The hero video is the live mika-promo deck, embedded as a self-contained static build under `public/promo-embed/` and loaded in an `<iframe>` behind a click-to-play poster — never a hand-exported mp4.
+  **Why:** a baked `MIKA_Promo.mp4` silently went stale whenever deck scenes changed (the lab scene existed in the deck but the mp4 still showed the old cut). video-js artifacts aren't deployable standalone, so the live `/promo/` dev URL can't be iframed in production either.
+  **How to apply:** any deck change requires rebuilding mika-promo and re-syncing the bundle into `public/promo-embed/` — the two drift independently. Build the deck with a relative base (`BASE_PATH=./`) so assets resolve in both the proxied dev preview and production. The deck starts MUTED when iframed (intentional, so standalone autoplay isn't blocked); audio is via the in-deck unmute control, not auto-on. Re-shoot `footage/promo_poster.jpg` from a deck frame when on-screen copy changes.
 
 ## GitHub push setup
 - Code is pushed to GitHub repo **husam-hammami/Mika_Online** (public) via the Replit GitHub **connector** (OAuth, account husam-hammami), NOT a PAT.
