@@ -1,84 +1,70 @@
-import { useState, useEffect, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { useCreateAccessRequest } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, Download, CheckCircle2 } from "lucide-react";
-import { getListAccessRequestsQueryKey, getGetAccessRequestSummaryQueryKey } from "@workspace/api-client-react";
-import { useQueryClient } from "@tanstack/react-query";
+import { Loader2, CheckCircle2 } from "lucide-react";
 
-const DOWNLOAD_URL = "#"; // TODO: Swap for real installer later
-
-// Reasonable client-side email shape check (the server is the source of truth).
+// Client-side shape check only; the server is the source of truth.
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function EmailGate() {
+  const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
-  const [unlocked, setUnlocked] = useState(false);
+  const [profession, setProfession] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const [submittedName, setSubmittedName] = useState("");
   const { toast } = useToast();
   const createAccess = useCreateAccessRequest();
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    if (sessionStorage.getItem("mika_unlocked")) {
-      setUnlocked(true);
-    }
-  }, []);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    const trimmed = email.trim();
-    if (!EMAIL_RE.test(trimmed)) {
-      toast({
-        title: "Invalid email",
-        description: "Please enter a valid email address.",
-        variant: "destructive",
-      });
+    const fn = firstName.trim();
+    const em = email.trim();
+    const pr = profession.trim();
+
+    if (!fn) {
+      toast({ title: "Name required", description: "Please enter your first name.", variant: "destructive" });
+      return;
+    }
+    if (!EMAIL_RE.test(em)) {
+      toast({ title: "Invalid email", description: "Please enter a valid email address.", variant: "destructive" });
+      return;
+    }
+    if (!pr) {
+      toast({ title: "Profession required", description: "Please tell us your profession.", variant: "destructive" });
       return;
     }
 
     createAccess.mutate(
-      { data: { email: trimmed } },
+      { data: { firstName: fn, email: em, profession: pr } },
       {
         onSuccess: () => {
-          setUnlocked(true);
-          sessionStorage.setItem("mika_unlocked", "true");
-          queryClient.invalidateQueries({ queryKey: getListAccessRequestsQueryKey() });
-          queryClient.invalidateQueries({ queryKey: getGetAccessRequestSummaryQueryKey() });
-          toast({
-            title: "Access granted",
-            description: "You can now download MIKA.",
-          });
+          setSubmittedName(fn);
+          setSubmitted(true);
         },
         onError: () => {
-          // Note: intentionally do NOT unlock on error — the gate must only open
-          // after a successful POST so every download corresponds to a captured email.
+          // Do NOT show success on error — only a stored request should confirm.
           toast({
             title: "Something went wrong",
-            description: "We couldn't process your request. Please try again.",
+            description: "We couldn't submit your request. Please try again.",
             variant: "destructive",
           });
         },
-      }
+      },
     );
   };
 
-  if (unlocked) {
+  if (submitted) {
     return (
-      <div className="flex flex-col items-center justify-center space-y-4 animate-in fade-in zoom-in duration-500">
+      <div className="w-full max-w-md mx-auto flex flex-col items-center justify-center space-y-3 text-center animate-in fade-in zoom-in duration-500">
         <div className="flex items-center space-x-2 text-green-600 dark:text-green-500 font-medium">
           <CheckCircle2 className="w-5 h-5" />
-          <span>Access unlocked</span>
+          <span>Request received</span>
         </div>
-        <a
-          href={DOWNLOAD_URL}
-          className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-12 px-8 py-2 mika-accent-bg text-white hover:bg-[#1a5fe6] shadow-lg hover:shadow-xl hover:-translate-y-0.5 duration-200"
-        >
-          <Download className="mr-2 w-4 h-4" />
-          Download MIKA
-        </a>
-        <p className="text-xs text-muted-foreground mt-2">
-          Free for Mac &amp; Windows
+        <p className="text-sm text-muted-foreground">
+          Thanks{submittedName ? `, ${submittedName}` : ""} — we'll review your request and email you a
+          download link for MIKA.
         </p>
       </div>
     );
@@ -86,17 +72,45 @@ export function EmailGate() {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+      <form onSubmit={handleSubmit} className="flex flex-col space-y-3">
         <div className="flex flex-col sm:flex-row gap-2">
-          <label htmlFor="mika-email" className="sr-only">
-            Email address
-          </label>
+          <label htmlFor="mika-firstname" className="sr-only">First name</label>
+          <Input
+            id="mika-firstname"
+            type="text"
+            name="firstName"
+            autoComplete="given-name"
+            placeholder="First name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            maxLength={50}
+            className="h-12 bg-white/50 backdrop-blur-sm border-gray-200 focus-visible:ring-[#1e6bff]"
+            required
+            disabled={createAccess.isPending}
+          />
+          <label htmlFor="mika-profession" className="sr-only">Profession</label>
+          <Input
+            id="mika-profession"
+            type="text"
+            name="profession"
+            autoComplete="organization-title"
+            placeholder="Profession (e.g. radiologist)"
+            value={profession}
+            onChange={(e) => setProfession(e.target.value)}
+            maxLength={100}
+            className="h-12 bg-white/50 backdrop-blur-sm border-gray-200 focus-visible:ring-[#1e6bff]"
+            required
+            disabled={createAccess.isPending}
+          />
+        </div>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <label htmlFor="mika-email" className="sr-only">Email address</label>
           <Input
             id="mika-email"
             type="email"
             name="email"
             autoComplete="email"
-            placeholder="Enter your email to download"
+            placeholder="Enter your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="h-12 bg-white/50 backdrop-blur-sm border-gray-200 focus-visible:ring-[#1e6bff]"
@@ -108,14 +122,13 @@ export function EmailGate() {
             className="h-12 px-8 mika-accent-bg hover:bg-[#1a5fe6] text-white font-medium shadow-md transition-all"
             disabled={createAccess.isPending}
           >
-            {createAccess.isPending ? (
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            ) : null}
-            Get Access
+            {createAccess.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+            Request access
           </Button>
         </div>
         <p className="text-xs text-center text-muted-foreground">
-          MIKA is completely free. Your email is only used to send the download link and occasional updates — never shared.
+          MIKA is completely free. We review each request and email you a download link. Your details are
+          only used to send the link and occasional updates — never shared.
         </p>
       </form>
     </div>

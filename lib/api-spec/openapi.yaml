@@ -45,7 +45,7 @@ paths:
       operationId: createAccessRequest
       tags: [access]
       summary: Submit an access request
-      description: Stores a visitor's email so they can be sent the download. Idempotent on email.
+      description: Stores a visitor's early-access request so the owner can approve and email a download link. Idempotent on email.
       requestBody:
         required: true
         content:
@@ -84,6 +84,34 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AccessRequestSummary"
+  /access-requests/{id}/download:
+    get:
+      operationId: downloadAccessRequest
+      tags: [access]
+      summary: Record a download and redirect to the installer
+      description: >-
+        Stamps the download against the access request (first-download time and
+        an incremented count), then redirects the browser to the MIKA installer.
+        Intended to be used as the href of the download link, not called via fetch.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "302":
+          description: Redirect to the MIKA installer
+          headers:
+            Location:
+              schema:
+                type: string
+        "404":
+          description: Access request not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
     HealthStatus:
@@ -95,7 +123,7 @@ components:
         - status
     AccessRequest:
       type: object
-      required: [id, email, createdAt]
+      required: [id, email, createdAt, downloadCount]
       properties:
         id:
           type: integer
@@ -104,6 +132,13 @@ components:
         createdAt:
           type: string
           format: date-time
+        downloadedAt:
+          type: ["string", "null"]
+          format: date-time
+          description: When this email first downloaded MIKA. Null if never downloaded.
+        downloadCount:
+          type: integer
+          description: How many times the download link has been followed for this email.
     AccessRequestInput:
       type: object
       required: [email]
@@ -113,14 +148,25 @@ components:
           format: email
           minLength: 3
           maxLength: 320
+        firstName:
+          type: string
+          maxLength: 50
+          description: Applicant first name, shown in the approval queue.
+        profession:
+          type: string
+          maxLength: 100
+          description: Applicant profession, shown in the approval queue.
     AccessRequestSummary:
       type: object
-      required: [total, today, latestEmail, latestAt]
+      required: [total, today, downloaded, latestEmail, latestAt]
       properties:
         total:
           type: integer
         today:
           type: integer
+        downloaded:
+          type: integer
+          description: Number of captured emails that have downloaded at least once.
         latestEmail:
           type: ["string", "null"]
         latestAt:

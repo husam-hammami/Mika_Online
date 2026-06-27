@@ -13,6 +13,13 @@ export interface AccessRequest {
   id: number;
   email: string;
   createdAt: string;
+  /**
+     * When this email first downloaded MIKA. Null if never downloaded.
+     * @nullable
+     */
+  downloadedAt?: string | null;
+  /** How many times the download link has been followed for this email. */
+  downloadCount: number;
 }
 
 export interface AccessRequestInput {
@@ -21,11 +28,23 @@ export interface AccessRequestInput {
      * @maxLength 320
      */
   email: string;
+  /**
+     * Applicant first name, shown in the approval queue.
+     * @maxLength 50
+     */
+  firstName?: string;
+  /**
+     * Applicant profession, shown in the approval queue.
+     * @maxLength 100
+     */
+  profession?: string;
 }
 
 export interface AccessRequestSummary {
   total: number;
   today: number;
+  /** Number of captured emails that have downloaded at least once. */
+  downloaded: number;
   /** @nullable */
   latestEmail: string | null;
   /** @nullable */
@@ -35,4 +54,3 @@ export interface AccessRequestSummary {
 export interface ErrorResponse {
   error: string;
 }
-
