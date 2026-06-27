@@ -7,6 +7,7 @@ import { SceneUpload } from './video_scenes/SceneUpload';
 import { SceneReading } from './video_scenes/SceneReading';
 import { SceneAnswer } from './video_scenes/SceneAnswer';
 import { SceneChat } from './video_scenes/SceneChat';
+import { SceneLab } from './video_scenes/SceneLab';
 import { SceneStory } from './video_scenes/SceneStory';
 import { SceneProof } from './video_scenes/SceneProof';
 import { SceneAbout } from './video_scenes/SceneAbout';
@@ -19,6 +20,7 @@ export const SCENE_DURATIONS = {
   reading: 5500,
   answer: 7000,
   chat: 7000,
+  lab: 6500,
   story: 10500,
   proof: 8000,
   about: 9000,
@@ -32,6 +34,7 @@ const SCENE_COMPONENTS: Record<string, React.ComponentType> = {
   reading: SceneReading,
   answer: SceneAnswer,
   chat: SceneChat,
+  lab: SceneLab,
   story: SceneStory,
   proof: SceneProof,
   about: SceneAbout,

@@ -7,7 +7,7 @@ export function SceneReading() {
       stepIndex={1}
       eyebrow="STEP 02"
       headline="MIKA reads all of it."
-      sub="Every image and measurement, gone through with care."
+      sub="Every image, measurement, and lab value, gone through with care."
     />
   );
 }

@@ -7,7 +7,7 @@ export function SceneChat() {
       stepIndex={3}
       eyebrow="STEP 04"
       headline="Then you can just ask."
-      sub="Ask MIKA anything about your scan and get a clear answer back, in your own words."
+      sub="Ask MIKA anything about your scan or lab report and get a clear answer back, in your own words."
     />
   );
 }
