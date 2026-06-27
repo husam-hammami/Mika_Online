@@ -1,5 +1,5 @@
-import React, { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { useRef, type ReactNode } from "react";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 
 export function FadeIn({
   children,
@@ -9,7 +9,7 @@ export function FadeIn({
   className = "",
   once = true,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   delay?: number;
   duration?: number;
   y?: number;
@@ -18,13 +18,22 @@ export function FadeIn({
 }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once, margin: "-10%" });
+  const reduceMotion = useReducedMotion();
+
+  // Honor the OS "reduce motion" setting: no slide/fade, just render in place.
+  const from = reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y };
+  const to = reduceMotion
+    ? { opacity: 1, y: 0 }
+    : isInView
+      ? { opacity: 1, y: 0 }
+      : { opacity: 0, y };
 
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y }}
-      transition={{ duration, delay, ease: [0.21, 0.47, 0.32, 0.98] }}
+      initial={from}
+      animate={to}
+      transition={{ duration: reduceMotion ? 0 : duration, delay: reduceMotion ? 0 : delay, ease: [0.21, 0.47, 0.32, 0.98] }}
       className={className}
     >
       {children}

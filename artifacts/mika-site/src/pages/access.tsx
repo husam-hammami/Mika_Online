@@ -19,20 +19,33 @@ export default function Access() {
   const { data: requests, isLoading: isListLoading } = useListAccessRequests();
   const { data: summary, isLoading: isSummaryLoading } = useGetAccessRequestSummary();
 
+  // Escape a value for CSV: quote when it contains a delimiter/quote/newline, and
+  // neutralize spreadsheet formula injection by prefixing risky leading characters.
+  const csvEscape = (value: unknown): string => {
+    let s = String(value ?? "");
+    if (/^[=+\-@\t\r]/.test(s)) {
+      s = "'" + s;
+    }
+    if (/[",\n\r]/.test(s)) {
+      s = '"' + s.replace(/"/g, '""') + '"';
+    }
+    return s;
+  };
+
   const handleExportCSV = () => {
     if (!requests || requests.length === 0) return;
-    
+
     const headers = ["ID", "Email", "Date Joined"];
     const rows = requests.map(req => [
       req.id,
       req.email,
       format(new Date(req.createdAt), "yyyy-MM-dd HH:mm:ss")
     ]);
-    
+
     const csvContent = [
-      headers.join(","),
-      ...rows.map(e => e.join(","))
-    ].join("\n");
+      headers.map(csvEscape).join(","),
+      ...rows.map(row => row.map(csvEscape).join(","))
+    ].join("\r\n");
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -45,7 +58,7 @@ export default function Access() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-[#05070d] p-6 lg:p-12 font-sans selection:bg-[#1e6bff] selection:text-white">
+    <main className="min-h-screen bg-gray-50 text-[#05070d] p-6 lg:p-12 font-sans selection:bg-[#1e6bff] selection:text-white">
       <div className="max-w-6xl mx-auto space-y-8">
         
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -61,7 +74,7 @@ export default function Access() {
           <Button 
             onClick={handleExportCSV} 
             disabled={!requests || requests.length === 0}
-            className="mika-accent-bg hover:bg-blue-600 text-white"
+            className="mika-accent-bg hover:bg-[#1a5fe6] text-white"
           >
             <Download className="w-4 h-4 mr-2" />
             Export CSV
@@ -156,8 +169,8 @@ export default function Access() {
             </Table>
           </div>
         </Card>
-        
+
       </div>
-    </div>
+    </main>
   );
 }

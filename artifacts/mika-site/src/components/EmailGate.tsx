@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import { useCreateAccessRequest } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,9 @@ import { getListAccessRequestsQueryKey, getGetAccessRequestSummaryQueryKey } fro
 import { useQueryClient } from "@tanstack/react-query";
 
 const DOWNLOAD_URL = "#"; // TODO: Swap for real installer later
+
+// Reasonable client-side email shape check (the server is the source of truth).
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function EmailGate() {
   const [email, setEmail] = useState("");
@@ -22,9 +25,10 @@ export function EmailGate() {
     }
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!email || !email.includes("@")) {
+    const trimmed = email.trim();
+    if (!EMAIL_RE.test(trimmed)) {
       toast({
         title: "Invalid email",
         description: "Please enter a valid email address.",
@@ -34,7 +38,7 @@ export function EmailGate() {
     }
 
     createAccess.mutate(
-      { data: { email } },
+      { data: { email: trimmed } },
       {
         onSuccess: () => {
           setUnlocked(true);
@@ -47,6 +51,8 @@ export function EmailGate() {
           });
         },
         onError: () => {
+          // Note: intentionally do NOT unlock on error — the gate must only open
+          // after a successful POST so every download corresponds to a captured email.
           toast({
             title: "Something went wrong",
             description: "We couldn't process your request. Please try again.",
@@ -64,15 +70,15 @@ export function EmailGate() {
           <CheckCircle2 className="w-5 h-5" />
           <span>Access unlocked</span>
         </div>
-        <a 
-          href={DOWNLOAD_URL} 
-          className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-12 px-8 py-2 mika-accent-bg text-white hover:bg-blue-600 shadow-lg hover:shadow-xl hover:-translate-y-0.5 duration-200"
+        <a
+          href={DOWNLOAD_URL}
+          className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-12 px-8 py-2 mika-accent-bg text-white hover:bg-[#1a5fe6] shadow-lg hover:shadow-xl hover:-translate-y-0.5 duration-200"
         >
           <Download className="mr-2 w-4 h-4" />
           Download MIKA
         </a>
         <p className="text-xs text-muted-foreground mt-2">
-          Mac & Windows
+          Free for Mac &amp; Windows
         </p>
       </div>
     );
@@ -82,8 +88,14 @@ export function EmailGate() {
     <div className="w-full max-w-md mx-auto">
       <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
         <div className="flex flex-col sm:flex-row gap-2">
+          <label htmlFor="mika-email" className="sr-only">
+            Email address
+          </label>
           <Input
+            id="mika-email"
             type="email"
+            name="email"
+            autoComplete="email"
             placeholder="Enter your email to download"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -91,9 +103,9 @@ export function EmailGate() {
             required
             disabled={createAccess.isPending}
           />
-          <Button 
-            type="submit" 
-            className="h-12 px-8 mika-accent-bg hover:bg-blue-600 text-white font-medium shadow-md transition-all"
+          <Button
+            type="submit"
+            className="h-12 px-8 mika-accent-bg hover:bg-[#1a5fe6] text-white font-medium shadow-md transition-all"
             disabled={createAccess.isPending}
           >
             {createAccess.isPending ? (
@@ -103,7 +115,7 @@ export function EmailGate() {
           </Button>
         </div>
         <p className="text-xs text-center text-muted-foreground">
-          MIKA is completely free. We just need an email to send you updates.
+          MIKA is completely free. Your email is only used to send the download link and occasional updates — never shared.
         </p>
       </form>
     </div>
