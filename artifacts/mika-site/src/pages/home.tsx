@@ -1,5 +1,9 @@
-import { useState } from "react";
-import { FadeIn } from "@/components/FadeIn";
+import { useState, useRef } from "react";
+import { motion, useScroll, useTransform, useReducedMotion, type Variants } from "framer-motion";
+import { Reveal } from "@/components/Reveal";
+import { Parallax } from "@/components/Parallax";
+import { ParticleField } from "@/components/ParticleField";
+import { ScrollProgress } from "@/components/ScrollProgress";
 import { EmailGate } from "@/components/EmailGate";
 import { SiteHeader, scrollToDownload } from "@/components/SiteHeader";
 import {
@@ -46,10 +50,7 @@ const STEPS = [
 ];
 
 const FAQS = [
-  {
-    q: "Is MIKA really free?",
-    a: "Yes. MIKA is completely free to download and use.",
-  },
+  { q: "Is MIKA really free?", a: "Yes. MIKA is completely free to download and use." },
   {
     q: "Is my medical data private?",
     a: "MIKA reads your scans and reports on your own computer, so your medical data stays with you.",
@@ -62,53 +63,93 @@ const FAQS = [
     q: "What can MIKA read?",
     a: "Medical scans like MRI, CT, and X-ray, plus lab reports and blood work — as image files or PDFs.",
   },
-  {
-    q: "Which devices are supported?",
-    a: "MIKA is available for Mac and Windows.",
-  },
+  { q: "Which devices are supported?", a: "MIKA is available for Mac and Windows." },
 ];
+
+// Fan-in entrance directions for 3-up card rows.
+const FAN: Array<"left" | "up" | "right"> = ["left", "up", "right"];
+
+const heroContainer: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.13, delayChildren: 0.1 } },
+};
+const heroItem: Variants = {
+  hidden: { opacity: 0, y: 30, filter: "blur(8px)" },
+  show: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.85, ease: [0.21, 0.47, 0.32, 0.98] },
+  },
+};
 
 export default function Home() {
   const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, "");
   const [playing, setPlaying] = useState(false);
+  const reduce = useReducedMotion();
+
+  // Hero "scroll out": content drifts up and dissolves, glow sinks behind it.
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollYProgress: heroP } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+  const heroY = useTransform(heroP, [0, 1], [0, -140]);
+  const heroOpacity = useTransform(heroP, [0, 0.75], [1, 0]);
+  const glowY = useTransform(heroP, [0, 1], [0, 180]);
+  const heroStyle = reduce ? undefined : { y: heroY, opacity: heroOpacity };
+  const glowStyle = reduce ? undefined : { y: glowY };
 
   return (
     <>
+      <ScrollProgress />
       <SiteHeader />
       <main id="top" className="min-h-[100dvh] w-full flex flex-col font-sans selection:bg-[#1e6bff] selection:text-white">
         {/* 1) DARK / CINEMATIC OPENING */}
-        <section className="mika-dark-bg min-h-screen relative overflow-hidden flex flex-col items-center justify-start pt-10 pb-8 px-6">
-          <div className="absolute inset-0 w-full h-full opacity-30 pointer-events-none">
-            <div className="absolute top-1/4 left-1/4 w-[50vw] h-[50vw] bg-[#1e6bff] rounded-full blur-[150px] opacity-20 animate-pulse motion-reduce:animate-none mix-blend-screen" />
-            <div className="absolute bottom-1/4 right-1/4 w-[40vw] h-[40vw] bg-[#1e6bff] rounded-full blur-[120px] opacity-10 mix-blend-screen" />
+        <section
+          ref={heroRef}
+          className="mika-dark-bg min-h-screen relative overflow-hidden flex flex-col items-center justify-start pt-10 pb-8 px-6"
+        >
+          {/* ambient layers */}
+          <div aria-hidden="true" className="absolute inset-0 mika-grid-dark opacity-50 pointer-events-none" />
+          <div aria-hidden="true" className="absolute inset-0 opacity-60 pointer-events-none">
+            <ParticleField />
           </div>
+          <motion.div aria-hidden="true" style={glowStyle} className="absolute inset-0 w-full h-full opacity-40 pointer-events-none">
+            <div className="mika-float absolute top-1/4 left-1/4 w-[50vw] h-[50vw] bg-[#1e6bff] rounded-full blur-[150px] opacity-25 mix-blend-screen" />
+            <div className="mika-float-slow absolute bottom-1/4 right-1/4 w-[40vw] h-[40vw] bg-[#3b82f6] rounded-full blur-[120px] opacity-15 mix-blend-screen" />
+          </motion.div>
 
-          <div className="z-10 w-full max-w-7xl mx-auto flex flex-col items-center text-center">
-            <FadeIn>
-              <img
-                src={`${baseUrl}/brand/mika_logo_hero.png`}
-                alt="MIKA"
-                width={1232}
-                height={559}
-                fetchPriority="high"
-                className="h-20 sm:h-24 md:h-28 lg:h-32 w-auto mb-3 opacity-95 drop-shadow-[0_0_35px_rgba(30,107,255,0.6)]"
-              />
-            </FadeIn>
-
-            <FadeIn delay={0.2}>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-3 leading-[1.05]">
-                Understand your body.{" "}
-                <span className="mika-accent-text text-shadow-glow">In plain language.</span>
-              </h1>
-            </FadeIn>
-
-            <FadeIn delay={0.4}>
-              <p className="text-base md:text-lg text-gray-400 max-w-xl mx-auto mb-5 leading-relaxed">
-                A free app that reads and explains your medical scans and lab reports.
-              </p>
-            </FadeIn>
-
-            <FadeIn delay={0.5}>
+          <motion.div
+            style={heroStyle}
+            variants={heroContainer}
+            initial={reduce ? false : "hidden"}
+            animate="show"
+            className="z-10 w-full max-w-7xl mx-auto flex flex-col items-center text-center"
+          >
+            <motion.img
+              variants={heroItem}
+              src={`${baseUrl}/brand/mika_logo_hero.png`}
+              alt="MIKA"
+              width={1232}
+              height={559}
+              fetchPriority="high"
+              className="h-20 sm:h-24 md:h-28 lg:h-32 w-auto mb-3 opacity-95 drop-shadow-[0_0_35px_rgba(30,107,255,0.6)]"
+            />
+            <motion.h1
+              variants={heroItem}
+              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-3 leading-[1.05]"
+            >
+              Understand your body.{" "}
+              <span className="mika-accent-text text-shadow-glow">In plain language.</span>
+            </motion.h1>
+            <motion.p
+              variants={heroItem}
+              className="text-base md:text-lg text-gray-400 max-w-xl mx-auto mb-5 leading-relaxed"
+            >
+              A free app that reads and explains your medical scans and lab reports.
+            </motion.p>
+            <motion.div variants={heroItem}>
               <button
                 type="button"
                 onClick={scrollToDownload}
@@ -120,9 +161,9 @@ export default function Home() {
               <p className="text-xs text-gray-500 mt-3">
                 Free for Mac &amp; Windows · Not a substitute for professional medical advice
               </p>
-            </FadeIn>
+            </motion.div>
 
-            <div className="w-full mt-8">
+            <motion.div variants={heroItem} className="w-full mt-8">
               <div className="relative w-full max-w-5xl mx-auto aspect-video rounded-2xl overflow-hidden box-shadow-glow border border-white/10 bg-black">
                 {playing ? (
                   <iframe
@@ -151,97 +192,120 @@ export default function Home() {
                   </button>
                 )}
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
+
+          {/* scroll cue */}
+          {!reduce && (
+            <motion.div
+              aria-hidden="true"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 1, 0], y: [0, 10, 0] }}
+              transition={{ duration: 2.2, repeat: Infinity, delay: 1.4 }}
+              className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 w-6 h-10 rounded-full border border-white/25 flex items-start justify-center p-1.5"
+            >
+              <span className="w-1 h-2 rounded-full bg-[#1e6bff]" />
+            </motion.div>
+          )}
         </section>
 
         {/* FOUNDER STORY */}
-        <section className="mika-dark-bg py-32 px-6 relative border-b border-white/5">
-          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-            <FadeIn className="order-2 md:order-1 relative">
-              <div className="relative w-full max-w-md mx-auto md:mx-0 aspect-[4/5] rounded-xl overflow-hidden border border-white/10 shadow-2xl">
-                <img
-                  src={`${baseUrl}/brand/founder.png`}
-                  alt="Husam Hammami, creator of MIKA"
-                  width={400}
-                  height={400}
-                  loading="lazy"
-                  className="w-full h-full object-cover opacity-80"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#05070d] via-transparent to-transparent" />
+        <section className="mika-dark-bg py-32 px-6 relative overflow-hidden border-b border-white/5">
+          <div aria-hidden="true" className="absolute inset-0 mika-grid-dark opacity-30 pointer-events-none" />
+          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center relative">
+            <Reveal direction="left" className="order-2 md:order-1 relative">
+              <Parallax speed={0.18}>
+                <div className="relative w-full max-w-md mx-auto md:mx-0 aspect-[4/5] rounded-xl overflow-hidden border border-white/10 shadow-2xl">
+                  <img
+                    src={`${baseUrl}/brand/founder.png`}
+                    alt="Husam Hammami, creator of MIKA"
+                    width={400}
+                    height={400}
+                    loading="lazy"
+                    className="w-full h-full object-cover opacity-80"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#05070d] via-transparent to-transparent" />
+                </div>
+              </Parallax>
+              <div className="mika-float absolute -bottom-8 -right-8 w-48 h-48 bg-[#1e6bff] rounded-full blur-[80px] opacity-20 pointer-events-none" />
+            </Reveal>
+
+            <Reveal direction="right" className="order-1 md:order-2 space-y-8">
+              <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight">
+                &ldquo;This started with me.&rdquo;
+              </h2>
+              <div className="space-y-6 text-gray-300 text-lg leading-relaxed">
+                <p>
+                  I know how it feels to be alone and afraid, holding answers about your own body that you can&rsquo;t understand.
+                </p>
+                <p className="text-white font-medium text-xl border-l-2 border-[#1e6bff] pl-4">
+                  &ldquo;I built MIKA so you never have to feel as lost as I did, and made it free, for anyone who needs it.&rdquo;
+                </p>
               </div>
-              <div className="absolute -bottom-8 -right-8 w-48 h-48 bg-[#1e6bff] rounded-full blur-[80px] opacity-20 pointer-events-none" />
-            </FadeIn>
-
-            <div className="order-1 md:order-2 space-y-8">
-              <FadeIn>
-                <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight">
-                  &ldquo;This started with me.&rdquo;
-                </h2>
-              </FadeIn>
-
-              <FadeIn delay={0.2}>
-                <div className="space-y-6 text-gray-300 text-lg leading-relaxed">
-                  <p>
-                    I know how it feels to be alone and afraid, holding answers about your own body that you can&rsquo;t understand.
-                  </p>
-                  <p className="text-white font-medium text-xl border-l-2 border-[#1e6bff] pl-4">
-                    &ldquo;I built MIKA so you never have to feel as lost as I did, and made it free, for anyone who needs it.&rdquo;
-                  </p>
-                </div>
-                <div className="mt-8 flex items-center gap-4">
-                  <div className="w-12 h-px bg-[#1e6bff]" />
-                  <span className="text-sm font-medium tracking-widest uppercase text-white/70">
-                    Husam Hammami, Creator
-                  </span>
-                </div>
-              </FadeIn>
-            </div>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-px bg-[#1e6bff]" />
+                <span className="text-sm font-medium tracking-widest uppercase text-white/70">
+                  Husam Hammami, Creator
+                </span>
+              </div>
+            </Reveal>
           </div>
         </section>
 
-        {/* TRANSITION INTO LIGHT */}
-        <div aria-hidden="true" className="bg-gradient-to-b from-[#05070d] to-white h-48 w-full" />
+        {/* TRANSITION INTO LIGHT — with a sweeping light beam */}
+        <div aria-hidden="true" className="relative bg-gradient-to-b from-[#05070d] to-white h-48 w-full overflow-hidden">
+          <div className="absolute top-1/2 left-0 right-0 h-px overflow-hidden">
+            <div className="mika-sweep h-px w-1/3 bg-gradient-to-r from-transparent via-[#1e6bff] to-transparent" />
+          </div>
+        </div>
 
         {/* 2) LIGHT / CLINICAL PRODUCT SECTION */}
-        <section id="how" className="mika-light-bg py-24 px-6">
-          <div className="max-w-5xl mx-auto text-center mb-24">
-            <FadeIn>
+        <section id="how" className="mika-light-bg py-24 px-6 relative overflow-hidden">
+          <div aria-hidden="true" className="absolute inset-0 mika-grid opacity-70 pointer-events-none" />
+          <div className="max-w-5xl mx-auto text-center mb-24 relative">
+            <Reveal direction="up">
               <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-[#05070d] mb-6">
                 How it works
               </h2>
               <p className="text-lg text-gray-600 max-w-xl mx-auto">
                 Four simple steps to clarity.
               </p>
-            </FadeIn>
+            </Reveal>
           </div>
 
-          <div className="max-w-6xl mx-auto space-y-32">
+          <div className="max-w-6xl mx-auto space-y-32 relative">
             {STEPS.map((step) => (
               <div key={step.n} className="grid md:grid-cols-2 gap-12 items-center">
-                <FadeIn className={`space-y-6 ${step.reverse ? "order-1 md:order-2 md:pl-12" : "md:pr-12"}`}>
-                  <div className="w-12 h-12 rounded-full mika-accent-bg text-white flex items-center justify-center text-xl font-bold mb-8">
+                <Reveal
+                  direction={step.reverse ? "right" : "left"}
+                  className={`space-y-6 ${step.reverse ? "order-1 md:order-2 md:pl-12" : "md:pr-12"}`}
+                >
+                  <div className="w-12 h-12 rounded-full mika-accent-bg text-white flex items-center justify-center text-xl font-bold mb-8 shadow-[0_0_25px_rgba(30,107,255,0.55)]">
                     {step.n}
                   </div>
                   <h3 className="text-3xl font-bold text-[#05070d]">{step.title}</h3>
                   <p className="text-lg text-gray-600">{step.body}</p>
-                </FadeIn>
-                <FadeIn
-                  delay={0.2}
-                  className={`relative rounded-2xl overflow-hidden border border-gray-200 shadow-xl bg-gray-100 aspect-video ${step.reverse ? "order-2 md:order-1" : ""}`}
+                </Reveal>
+                <Reveal
+                  direction={step.reverse ? "left" : "right"}
+                  className={step.reverse ? "order-2 md:order-1" : ""}
                 >
-                  <video
-                    src={`${baseUrl}/footage/${step.clip}.mp4`}
-                    poster={`${baseUrl}/footage/${step.clip}.jpg`}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="none"
-                    aria-label={step.label}
-                    className="w-full h-full object-contain"
-                  />
-                </FadeIn>
+                  <Parallax speed={0.16}>
+                    <div className="relative rounded-2xl overflow-hidden border border-gray-200 shadow-xl bg-gray-100 aspect-video">
+                      <video
+                        src={`${baseUrl}/footage/${step.clip}.mp4`}
+                        poster={`${baseUrl}/footage/${step.clip}.jpg`}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        preload="none"
+                        aria-label={step.label}
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                  </Parallax>
+                </Reveal>
               </div>
             ))}
           </div>
@@ -250,7 +314,7 @@ export default function Home() {
         {/* WHAT MIKA READS */}
         <section className="mika-light-bg pb-24 px-6">
           <div className="max-w-5xl mx-auto text-center mb-16">
-            <FadeIn>
+            <Reveal direction="up">
               <span className="inline-block text-sm font-semibold tracking-widest uppercase mika-accent-text mb-4">
                 What MIKA reads
               </span>
@@ -260,7 +324,7 @@ export default function Home() {
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 MIKA understands the files you already have at home — no special exports or formats to figure out.
               </p>
-            </FadeIn>
+            </Reveal>
           </div>
 
           <div className="max-w-5xl mx-auto grid sm:grid-cols-3 gap-6">
@@ -269,15 +333,15 @@ export default function Home() {
               { icon: FlaskConical, title: "Lab & blood work", body: "Blood panels and printed lab reports." },
               { icon: FileText, title: "Everyday files", body: "The image files and PDFs you already have." },
             ].map((item, i) => (
-              <FadeIn key={item.title} delay={i * 0.1}>
-                <div className="h-full rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
-                  <span className="flex items-center justify-center w-12 h-12 rounded-xl bg-[#1e6bff]/10 text-[#1e6bff] mb-5">
+              <Reveal key={item.title} direction={FAN[i]} className="h-full">
+                <div className="group h-full rounded-2xl border border-gray-200 bg-white p-8 shadow-sm transition-all hover:shadow-lg hover:-translate-y-1 hover:border-[#1e6bff]/30">
+                  <span className="flex items-center justify-center w-12 h-12 rounded-xl bg-[#1e6bff]/10 text-[#1e6bff] mb-5 transition-colors group-hover:bg-[#1e6bff] group-hover:text-white">
                     <item.icon className="w-6 h-6" />
                   </span>
                   <h3 className="text-xl font-bold text-[#05070d] mb-2">{item.title}</h3>
                   <p className="text-gray-600">{item.body}</p>
                 </div>
-              </FadeIn>
+              </Reveal>
             ))}
           </div>
         </section>
@@ -285,7 +349,7 @@ export default function Home() {
         {/* LAB REPORTS */}
         <section className="mika-light-bg pb-24 px-6">
           <div className="max-w-5xl mx-auto text-center mb-16">
-            <FadeIn>
+            <Reveal direction="up">
               <span className="inline-block text-sm font-semibold tracking-widest uppercase mika-accent-text mb-4">
                 Not just imaging
               </span>
@@ -295,25 +359,27 @@ export default function Home() {
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 MIKA reads your blood work and lab panels the same way. It explains every value and tells you what actually matters.
               </p>
-            </FadeIn>
+            </Reveal>
           </div>
 
           <div className="max-w-5xl mx-auto">
-            <FadeIn>
-              <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-xl bg-white">
-                <img
-                  src={`${baseUrl}/product/lab_result.png`}
-                  alt="MIKA explaining a lab report in plain language"
-                  width={1600}
-                  height={719}
-                  loading="lazy"
-                  className="w-full h-auto"
-                />
-              </div>
-            </FadeIn>
+            <Reveal direction="scale">
+              <Parallax speed={0.12}>
+                <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-xl bg-white">
+                  <img
+                    src={`${baseUrl}/product/lab_result.png`}
+                    alt="MIKA explaining a lab report in plain language"
+                    width={1600}
+                    height={719}
+                    loading="lazy"
+                    className="w-full h-auto"
+                  />
+                </div>
+              </Parallax>
+            </Reveal>
 
             <div className="grid md:grid-cols-2 gap-8 mt-8">
-              <FadeIn delay={0.15} className="space-y-4">
+              <Reveal direction="left" className="space-y-4">
                 <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-xl bg-white">
                   <img
                     src={`${baseUrl}/product/lab_values.png`}
@@ -327,8 +393,8 @@ export default function Home() {
                 <p className="text-base text-gray-600 text-center">
                   Every value, read against your printed range and put in plain words.
                 </p>
-              </FadeIn>
-              <FadeIn delay={0.3} className="space-y-4">
+              </Reveal>
+              <Reveal direction="right" className="space-y-4">
                 <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-xl bg-white">
                   <img
                     src={`${baseUrl}/product/lab_chat.png`}
@@ -342,15 +408,16 @@ export default function Home() {
                 <p className="text-base text-gray-600 text-center">
                   Ask anything about your results and get a clear answer back.
                 </p>
-              </FadeIn>
+              </Reveal>
             </div>
           </div>
         </section>
 
         {/* PRIVACY / LOCAL PROCESSING */}
-        <section className="bg-gray-50 py-24 px-6 border-t border-gray-200">
-          <div className="max-w-5xl mx-auto text-center mb-16">
-            <FadeIn>
+        <section className="bg-gray-50 py-24 px-6 relative overflow-hidden border-t border-gray-200">
+          <div aria-hidden="true" className="absolute inset-0 mika-grid opacity-60 pointer-events-none" />
+          <div className="max-w-5xl mx-auto text-center mb-16 relative">
+            <Reveal direction="up">
               <span className="inline-block text-sm font-semibold tracking-widest uppercase mika-accent-text mb-4">
                 Private by design
               </span>
@@ -360,24 +427,24 @@ export default function Home() {
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 MIKA reads and explains your scans on your own computer. Your most personal medical files stay with you.
               </p>
-            </FadeIn>
+            </Reveal>
           </div>
 
-          <div className="max-w-5xl mx-auto grid sm:grid-cols-3 gap-6">
+          <div className="max-w-5xl mx-auto grid sm:grid-cols-3 gap-6 relative">
             {[
               { icon: Laptop, title: "Runs on your computer", body: "The reading happens on your own machine." },
               { icon: Lock, title: "Your files, your device", body: "Your scans and reports stay where they are." },
               { icon: ShieldCheck, title: "Free, with no catch", body: "No subscription and nothing to sell — it's just free." },
             ].map((item, i) => (
-              <FadeIn key={item.title} delay={i * 0.1}>
-                <div className="h-full rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
-                  <span className="flex items-center justify-center w-12 h-12 rounded-xl bg-[#1e6bff]/10 text-[#1e6bff] mb-5">
+              <Reveal key={item.title} direction={FAN[i]} className="h-full">
+                <div className="group h-full rounded-2xl border border-gray-200 bg-white p-8 shadow-sm transition-all hover:shadow-lg hover:-translate-y-1 hover:border-[#1e6bff]/30">
+                  <span className="flex items-center justify-center w-12 h-12 rounded-xl bg-[#1e6bff]/10 text-[#1e6bff] mb-5 transition-colors group-hover:bg-[#1e6bff] group-hover:text-white">
                     <item.icon className="w-6 h-6" />
                   </span>
                   <h3 className="text-xl font-bold text-[#05070d] mb-2">{item.title}</h3>
                   <p className="text-gray-600">{item.body}</p>
                 </div>
-              </FadeIn>
+              </Reveal>
             ))}
           </div>
         </section>
@@ -385,12 +452,12 @@ export default function Home() {
         {/* FAQ */}
         <section className="mika-light-bg py-24 px-6 border-t border-gray-200">
           <div className="max-w-3xl mx-auto">
-            <FadeIn>
+            <Reveal direction="up">
               <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-[#05070d] mb-12 text-center">
                 Questions, answered.
               </h2>
-            </FadeIn>
-            <FadeIn delay={0.1}>
+            </Reveal>
+            <Reveal direction="up">
               <Accordion type="single" collapsible className="w-full">
                 {FAQS.map((faq, i) => (
                   <AccordionItem key={i} value={`faq-${i}`}>
@@ -403,14 +470,16 @@ export default function Home() {
                   </AccordionItem>
                 ))}
               </Accordion>
-            </FadeIn>
+            </Reveal>
           </div>
         </section>
 
         {/* DOWNLOAD / EMAIL GATE */}
-        <section id="download" className="bg-gray-50 py-32 px-6 border-t border-gray-200">
-          <div className="max-w-3xl mx-auto text-center space-y-12">
-            <FadeIn>
+        <section id="download" className="bg-gray-50 py-32 px-6 relative overflow-hidden border-t border-gray-200">
+          <div aria-hidden="true" className="absolute inset-0 mika-grid opacity-60 pointer-events-none" />
+          <div aria-hidden="true" className="mika-float absolute top-10 left-1/2 -translate-x-1/2 w-[40vw] h-[40vw] max-w-xl bg-[#1e6bff] rounded-full blur-[140px] opacity-10 pointer-events-none" />
+          <div className="max-w-3xl mx-auto text-center space-y-12 relative">
+            <Reveal direction="up">
               <img
                 src={`${baseUrl}/brand/mika_helix_ink.png`}
                 alt="MIKA"
@@ -419,25 +488,26 @@ export default function Home() {
                 loading="lazy"
                 className="h-16 w-auto mx-auto mb-8 opacity-80"
               />
-              <h2 className="text-4xl font-bold text-[#05070d]">
-                Get MIKA for free.
-              </h2>
-            </FadeIn>
+              <h2 className="text-4xl font-bold text-[#05070d]">Get MIKA for free.</h2>
+            </Reveal>
 
-            <FadeIn delay={0.2}>
+            <Reveal direction="scale">
               <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 max-w-xl mx-auto">
                 <EmailGate />
               </div>
               <p className="text-xs text-gray-500 max-w-md mx-auto mt-6 leading-relaxed">
                 MIKA explains scans and lab reports in plain language. It is not a doctor and does not replace professional medical advice.
               </p>
-            </FadeIn>
+            </Reveal>
           </div>
         </section>
 
         {/* FOOTER */}
-        <footer className="mika-dark-bg py-12 px-6 border-t border-white/10 text-center">
-          <div className="max-w-4xl mx-auto space-y-6">
+        <footer className="mika-dark-bg py-12 px-6 relative overflow-hidden border-t border-white/10 text-center">
+          <div aria-hidden="true" className="absolute inset-0 opacity-40 pointer-events-none">
+            <ParticleField maxNodes={40} interactive={false} />
+          </div>
+          <div className="max-w-4xl mx-auto space-y-6 relative">
             <img
               src={`${baseUrl}/brand/mika_type.png`}
               alt="MIKA"

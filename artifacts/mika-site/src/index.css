@@ -221,3 +221,64 @@
 .box-shadow-glow {
   box-shadow: 0 0 60px rgba(30, 107, 255, 0.15);
 }
+
+/* ---- Futuristic motion / decoration layer ---- */
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Faint technical "blueprint" grid, edge-masked so it dissolves at the borders. */
+.mika-grid,
+.mika-grid-dark {
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 45%, #000 35%, transparent 78%);
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 45%, #000 35%, transparent 78%);
+}
+.mika-grid {
+  background-image:
+    linear-gradient(rgba(30, 107, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30, 107, 255, 0.06) 1px, transparent 1px);
+  background-size: 46px 46px;
+}
+.mika-grid-dark {
+  background-image:
+    linear-gradient(rgba(30, 107, 255, 0.10) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30, 107, 255, 0.10) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+@keyframes mika-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-18px); }
+}
+.mika-float {
+  animation: mika-float 9s ease-in-out infinite;
+}
+
+@keyframes mika-float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(22px); }
+}
+.mika-float-slow {
+  animation: mika-float-slow 13s ease-in-out infinite;
+}
+
+/* Light beam that sweeps across a section divider. */
+@keyframes mika-sweep {
+  0% { transform: translateX(-130%); }
+  100% { transform: translateX(130%); }
+}
+.mika-sweep {
+  animation: mika-sweep 6s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .mika-float,
+  .mika-float-slow,
+  .mika-sweep {
+    animation: none;
+  }
+}
