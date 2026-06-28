@@ -3,6 +3,7 @@ import { motion, useScroll, useTransform, useReducedMotion, type Variants } from
 import { Reveal } from "@/components/Reveal";
 import { Parallax } from "@/components/Parallax";
 import { ParticleField } from "@/components/ParticleField";
+import { HeroBackdrop } from "@/components/HeroBackdrop";
 import { ScrollProgress } from "@/components/ScrollProgress";
 import { EmailGate } from "@/components/EmailGate";
 import { SiteHeader, scrollToDownload } from "@/components/SiteHeader";
@@ -108,12 +109,12 @@ export default function Home() {
         {/* 1) DARK / CINEMATIC OPENING */}
         <section
           ref={heroRef}
-          className="mika-dark-bg min-h-screen relative overflow-hidden flex flex-col items-center justify-start pt-10 pb-8 px-6"
+          className="mika-dark-bg h-[100dvh] min-h-[600px] relative overflow-hidden flex flex-col items-center justify-center pt-6 pb-6 px-6"
         >
           {/* ambient layers */}
-          <div aria-hidden="true" className="absolute inset-0 mika-grid-dark opacity-50 pointer-events-none" />
-          <div aria-hidden="true" className="absolute inset-0 opacity-60 pointer-events-none">
-            <ParticleField />
+          <div aria-hidden="true" className="absolute inset-0 mika-grid-dark opacity-20 pointer-events-none" />
+          <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
+            <HeroBackdrop />
           </div>
           <motion.div aria-hidden="true" style={glowStyle} className="absolute inset-0 w-full h-full opacity-40 pointer-events-none">
             <div className="mika-float absolute top-1/4 left-1/4 w-[50vw] h-[50vw] bg-[#1e6bff] rounded-full blur-[150px] opacity-25 mix-blend-screen" />
@@ -134,18 +135,18 @@ export default function Home() {
               width={1232}
               height={559}
               fetchPriority="high"
-              className="h-20 sm:h-24 md:h-28 lg:h-32 w-auto mb-3 opacity-95 drop-shadow-[0_0_35px_rgba(30,107,255,0.6)]"
+              className="h-16 sm:h-20 md:h-24 w-auto mb-2 opacity-95 drop-shadow-[0_0_35px_rgba(30,107,255,0.6)]"
             />
             <motion.h1
               variants={heroItem}
-              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-3 leading-[1.05]"
+              className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-white mb-2 leading-[1.05]"
             >
               Understand your body.{" "}
               <span className="mika-accent-text text-shadow-glow">In plain language.</span>
             </motion.h1>
             <motion.p
               variants={heroItem}
-              className="text-base md:text-lg text-gray-400 max-w-xl mx-auto mb-5 leading-relaxed"
+              className="text-sm md:text-base text-gray-400 max-w-xl mx-auto mb-4 leading-relaxed"
             >
               A free app that reads and explains your medical scans and lab reports.
             </motion.p>
@@ -163,8 +164,8 @@ export default function Home() {
               </p>
             </motion.div>
 
-            <motion.div variants={heroItem} className="w-full mt-8">
-              <div className="relative w-full max-w-5xl mx-auto aspect-video rounded-2xl overflow-hidden box-shadow-glow border border-white/10 bg-black">
+            <motion.div variants={heroItem} className="w-full mt-4 flex justify-center">
+              <div className="relative h-[40vh] max-h-[420px] w-auto aspect-video rounded-2xl overflow-hidden box-shadow-glow border border-white/10 bg-black">
                 {playing ? (
                   <iframe
                     src={`${baseUrl}/promo-embed/index.html`}
