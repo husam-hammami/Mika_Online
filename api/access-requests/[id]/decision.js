@@ -2,13 +2,13 @@
 //   approve -> status='approved', decided_at set, then email the install link ONCE
 //   reject  -> status='rejected', decided_at set, no email
 //
-// Idempotency is enforced at the DB (approval_email_sent_at) AND at Loops (Idempotency-Key),
-// so a double-click or retry never sends two emails.
+// Idempotency is enforced at the DB (approval_email_sent_at) AND at Resend
+// (Idempotency-Key), so a double-click or retry never sends two emails.
 
 const { pool } = require("../../_db");
 const { isAdmin, readJsonCapped, shouldSendApprovalEmail, json } = require("../../_logic");
 
-const LOOPS_TRANSACTIONAL_URL = "https://app.loops.so/api/v1/transactional";
+const RESEND_URL = "https://api.resend.com/emails";
 
 async function safeText(resp) {
   try {
@@ -16,6 +16,12 @@ async function safeText(resp) {
   } catch {
     return "";
   }
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]),
+  );
 }
 
 module.exports = async function handler(req, res) {
@@ -89,35 +95,53 @@ module.exports = async function handler(req, res) {
     return json(res, 200, { id, status: "approved", emailed: !!fresh.approval_email_sent_at });
   }
 
-  const apiKey = process.env.LOOPS_API_KEY;
-  const transactionalId = process.env.LOOPS_TRANSACTIONAL_ID;
+  // --- Approval email via Resend ---
+  const apiKey = process.env.RESEND_API_KEY;
+  // Until the mika-md.app domain is verified in Resend, the shared sender
+  // "onboarding@resend.dev" works (delivers to the Resend account owner).
+  // After verifying the domain, set RESEND_FROM="MIKA <noreply@mika-md.app>".
+  const fromAddr = process.env.RESEND_FROM || "MIKA <onboarding@resend.dev>";
   const downloadUrl = `${process.env.SITE_URL || ""}/api/download`;
 
-  if (!apiKey || !transactionalId) {
-    console.error("LOOPS_API_KEY or LOOPS_TRANSACTIONAL_ID missing — cannot send approval email");
+  if (!apiKey) {
+    console.error("RESEND_API_KEY missing — cannot send approval email");
     return json(res, 200, { id, status: "approved", emailed: false });
   }
 
+  const firstName = escapeHtml(fresh.first_name || "there");
+  const subject = "You're in — download MIKA";
+  const html = `<div style="font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;color:#111111">
+  <div style="font-size:20px;font-weight:700;letter-spacing:.02em;margin-bottom:24px">MIKA</div>
+  <p style="font-size:16px;line-height:1.6;margin:0 0 16px">Hi ${firstName},</p>
+  <p style="font-size:16px;line-height:1.6;margin:0 0 24px">You're approved for early access to MIKA. Download the app for Mac or Windows below.</p>
+  <a href="${downloadUrl}" style="display:inline-block;background:#111111;color:#ffffff;text-decoration:none;font-size:15px;font-weight:600;padding:12px 20px;border-radius:8px">Download MIKA</a>
+  <p style="font-size:13px;line-height:1.6;color:#666666;margin:28px 0 0">Or paste this link into your browser:<br><span style="color:#444444">${downloadUrl}</span></p>
+  <p style="font-size:12px;line-height:1.6;color:#999999;margin:28px 0 0;border-top:1px solid #eeeeee;padding-top:16px">MIKA explains scans and lab reports in plain language. It is not a doctor and does not replace professional medical advice.</p>
+</div>`;
+  const text = `Hi ${fresh.first_name || "there"},
+
+You're approved for early access to MIKA. Download the app for Mac or Windows:
+
+${downloadUrl}
+
+MIKA explains scans and lab reports in plain language. It is not a doctor and does not replace professional medical advice.`;
+
   let emailed = false;
   try {
-    const resp = await fetch(LOOPS_TRANSACTIONAL_URL, {
+    const resp = await fetch(RESEND_URL, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
-        // 409 if this key was used in the last 24h -> treat as already-sent.
+        // Resend returns the same result for a repeated key -> safe on retry.
         "Idempotency-Key": `approve-${id}`,
       },
-      body: JSON.stringify({
-        transactionalId,
-        email: fresh.email,
-        dataVariables: { firstName: fresh.first_name || "there", downloadUrl },
-      }),
+      body: JSON.stringify({ from: fromAddr, to: [fresh.email], subject, html, text }),
     });
-    emailed = resp.ok || resp.status === 409;
-    if (!emailed) console.error("Loops transactional failed", resp.status, await safeText(resp));
+    emailed = resp.ok;
+    if (!emailed) console.error("Resend send failed", resp.status, await safeText(resp));
   } catch (err) {
-    console.error("Loops transactional error", err);
+    console.error("Resend send error", err);
   }
 
   if (emailed) {
